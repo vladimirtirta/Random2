@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Love You Putri Cantik</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(
+          135deg,
+          #ff9a9e 0%,
+          #fecfef 50%,
+          #fecfef 100%
+        );
+        font-family: "Baloo 2", cursive;
+        overflow: hidden;
+      }
+
+      .center-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+
+      .dot-container {
+        display: grid;
+        grid-template-columns: repeat(250, 1fr);
+        grid-auto-rows: 1fr;
+        width: 80vw;
+        height: 40vh;
+        position: relative;
+        gap: 0;
+      }
+
+      .dot {
+        width: 5px;
+        height: 5px;
+        background: radial-gradient(circle, #ff1493, #ff69b4);
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        animation: dotIn 1s forwards;
+        box-shadow: 0 0 2px rgba(255, 20, 147, 0.3);
+      }
+
+      @keyframes dotIn {
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .heart {
+        position: absolute;
+        color: #ff69b4;
+        font-size: 20px;
+        opacity: 0;
+        animation: heartFloat 3s infinite;
+      }
+
+      @keyframes heartFloat {
+        0% {
+          opacity: 0;
+          transform: translateY(0) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-20px) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-40px) scale(0.5);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center-wrapper">
+      <div class="dot-container" id="dotContainer"></div>
+    </div>
+
+    <script>
+      const text = "love you putri cantik";
+      const container = document.getElementById("dotContainer");
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 2000;
+      canvas.height = 800;
+
+      ctx.fillStyle = "black";
+      ctx.font = "bold 160px 'Baloo 2', cursive";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      const gridCols = 250;
+      const gridRows = 90;
+
+      const dotPositions = [];
+
+      for (let y = 0; y < gridRows; y++) {
+        for (let x = 0; x < gridCols; x++) {
+          const px = Math.floor((x / gridCols) * canvas.width);
+          const py = Math.floor((y / gridRows) * canvas.height);
+          const index = (py * canvas.width + px) * 4;
+          const alpha = imageData.data[index + 3];
+          if (alpha > 50) {
+            dotPositions.push({ x, y, px });
+          }
+        }
+      }
+
+      dotPositions.sort((a, b) => a.px - b.px);
+
+      let delay = 0;
+      dotPositions.forEach((pos, i) => {
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        dot.style.gridColumnStart = pos.x + 1;
+        dot.style.gridRowStart = pos.y + 1;
+        dot.style.animationDelay = `${delay}ms`;
+        container.appendChild(dot);
+        delay += 3;
+      });
+
+      // Floating hearts
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.top = Math.random() * 100 + "vh";
+        heart.style.animationDelay = Math.random() * 2 + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+      }
+
+      setInterval(createHeart, 1500);
+    </script>
+  </body>
+</html>
